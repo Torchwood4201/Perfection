@@ -136,5 +136,20 @@ Double-click index.html to play—no server or installation needed.
 
 **Start with the HTML structure, use reference images from "D:\Games\Perfection\refrance images" for layout, and build up the interactivity step by step!
 
+<!-- omgithub:readme:start -->
+## 🚀 Build, play, and remix with OMGithub
 
+**Remixed using [OMGithub.com](https://omgithub.com).**
 
+[![OMGithub](https://img.shields.io/badge/OMGithub-Open%20project-orange?style=for-the-badge)](https://omgithub.com/Torchwood4201/Perfection)
+[![GitHub](https://img.shields.io/badge/GitHub-Source-181717?logo=github&style=for-the-badge)](https://github.com/Torchwood4201/Perfection)
+
+- 🎮 [Open the project](https://omgithub.com/Torchwood4201/Perfection).
+- ✨ [Remix this project](https://omgithub.com/?remix=Torchwood4201%2FPerfection).
+- 💻 [Explore the source](https://github.com/Torchwood4201/Perfection).
+- 🛠️ [Check build runs](https://github.com/Torchwood4201/Perfection/actions).
+- 🐛 [Report an issue](https://github.com/Torchwood4201/Perfection/issues).
+- 👤 [Explore the creator's projects](https://omgithub.com/Torchwood4201).
+- 🌍 [Create with OMGithub](https://omgithub.com).
+- 🧬 [Explore the remix source](https://github.com/Torchwood4201/Perfection).
+<!-- omgithub:readme:end -->
