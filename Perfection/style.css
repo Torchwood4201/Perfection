@@ -6,16 +6,29 @@
 
 body {
     font-family: Arial, sans-serif;
-    background: url('refrance images/use this for color theme.jpg');
+    background-color: #003366;
+    background-image: url('refrance images/use this for color theme.jpg');
     background-size: 200px 200px;
     background-repeat: repeat;
     min-height: 100vh;
+    min-height: 100dvh;
     display: flex;
     flex-direction: column;
-    justify-content: center;
+    justify-content: flex-start;
     align-items: center;
     padding: 20px;
+    padding-bottom: max(20px, env(safe-area-inset-bottom));
     position: relative;
+    overflow-x: hidden;
+    touch-action: manipulation;
+    -webkit-tap-highlight-color: transparent;
+    overscroll-behavior-y: none;
+}
+
+body.is-dragging {
+    overflow: hidden;
+    touch-action: none;
+    overscroll-behavior: none;
 }
 
 .top-bar {
@@ -76,13 +89,14 @@ body {
     display: flex;
     justify-content: space-between;
     align-items: center;
+    flex-wrap: wrap;
     margin-bottom: 18px;
-    gap: 32px;
+    gap: 16px 32px;
     width: 100%;
     min-height: 120px;
-    height: 120px;
+    height: auto;
     border-radius: 12px;
-    padding: 0 32px;
+    padding: 16px 32px;
 }
 
 .timer-container {
@@ -201,27 +215,28 @@ body {
 
 .game-board {
     position: relative;
-    width: 412px;
-    height: 412px;
+    width: min(412px, 92vw);
+    aspect-ratio: 1;
+    height: auto;
+    min-height: 227px;
     margin: 0 auto 18px auto;
-    background-size: 412px 412px;
+    /* Artwork carries its own grid: stretch it edge-to-edge so the
+       absolutely-positioned slots register with the painted holes. */
+    background-size: 100% 100%;
     background-repeat: no-repeat;
     background-position: center;
     background-image: url('assets/Board/Perfection_empey_slots_emptey.png');
-    display: grid;
-    grid-template-columns: repeat(5, 1fr);
-    grid-template-rows: repeat(5, 1fr);
-    gap: 0;
-    padding: 0;
-    border: 8px solid #003366;
+    background-color: #3333ef;
+    /* Frame via shadow (not border) so artwork fills the whole box
+       and % slot coordinates map 1:1 onto the image. */
+    border: none;
     border-radius: 16px;
     overflow: hidden;
-    box-shadow: 0 4px 16px #0004;
-    background-color: transparent;
+    box-shadow: 0 0 0 8px #003366, 0 4px 16px #0004;
 }
 
 .game-board.filled {
-    background-image: url('assets/Board/Perfection_empey_slots_full.png');
+    background-image: url('assets/Board/full-win.png');
 }
 
 .game-board.win {
@@ -229,17 +244,22 @@ body {
 }
 
 .slot {
-    width: 100%;
-    height: 100%;
+    position: absolute;
     display: flex;
     justify-content: center;
     align-items: center;
-    transition: all 0.2s ease;
+    transition: transform 0.15s ease, border-color 0.15s ease, background-color 0.15s ease;
     cursor: pointer;
-    position: relative;
     border: 1px solid transparent;
-    min-height: 82px;
-    min-width: 82px;
+    border-radius: 6px;
+}
+
+/* Fat-finger hit area: taps near a small hole still land on it.
+   Only affects hit-testing, not the visible highlight box. */
+.slot::before {
+    content: '';
+    position: absolute;
+    inset: -6px;
 }
 
 .slot:hover {
@@ -392,6 +412,13 @@ body {
     box-shadow: none;
 }
 
+/* Sticker cut from the full-win artwork (geometry set inline). */
+.placed-piece {
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
 .shape.placed img {
     border-radius: 0;
 }
@@ -424,45 +451,80 @@ body {
 
 /* Responsive design */
 @media (max-width: 768px) {
+    body {
+        padding: 10px;
+    }
     .game-container {
         padding: 12px;
-        margin: 10px;
+        margin: 0;
         border-width: 5px;
+        max-width: calc(100vw - 20px);
+    }
+    .game-header {
+        min-height: 0;
+        height: auto;
+        margin-bottom: 12px;
+    }
+    .main-logo {
+        max-height: 72px;
+    }
+    .game-controls {
+        justify-content: center;
+        text-align: center;
+        padding: 12px 16px;
+        gap: 12px;
+    }
+    .timer {
+        width: 88px;
+        height: 88px;
+    }
+    .timer-number {
+        font-size: 1.4rem;
     }
     .game-board {
-        width: 309px;
-        height: 309px;
-        background-size: 309px 309px;
-        border-width: 5px;
-        border-radius: 16px;
+        width: min(86vw, 309px);
+        box-shadow: 0 0 0 5px #003366, 0 4px 16px #0004;
+        border-radius: 14px;
     }
     .shape {
         width: 58px;
         height: 58px;
         border-radius: 8px;
     }
-    .slot {
-        min-height: 62px;
-        min-width: 62px;
+    .btn.small {
+        min-height: 44px;
+        padding: 10px 16px;
+    }
+    .difficulty-label select {
+        min-height: 44px;
     }
 }
 
 @media (max-width: 480px) {
+    .game-container {
+        border-radius: 20px;
+        padding: 10px 10px 14px 10px;
+    }
     .game-board {
-        width: 227px;
-        height: 227px;
-        background-size: 227px 227px;
-        border-width: 3px;
+        width: min(86vw, 300px);
+        box-shadow: 0 0 0 3px #003366, 0 4px 16px #0004;
         border-radius: 10px;
     }
     .shape {
-        width: 38px;
-        height: 38px;
-        border-radius: 5px;
+        width: 44px;
+        height: 44px;
+        border-radius: 6px;
     }
-    .slot {
-        min-height: 41px;
-        min-width: 41px;
+    .shape-tray {
+        gap: 10px;
+        max-height: 28vh;
+    }
+    .drag-ghost {
+        width: 56px;
+        height: 56px;
+    }
+    .help {
+        font-size: 0.9rem;
     }
 }
 
@@ -480,7 +542,7 @@ body {
     display: inline-block;
     width: 100px;
     height: 48px;
-    margin: 0 auto;
+    margin: 0 auto 26px auto; /* room for the absolutely-positioned Start/Reset label */
     vertical-align: middle;
 }
 .switch input {
@@ -540,4 +602,285 @@ body {
     will-change: transform, opacity;
     transition: none;
     pointer-events: none;
+}
+
+/* ---- Improvement pack: feedback states (moved from JS-injected CSS) ---- */
+@keyframes fadeOut {
+    0% { opacity: 1; transform: translate(-50%, -50%) scale(1); }
+    100% { opacity: 0; transform: translate(-50%, -50%) scale(1.5); }
+}
+@keyframes gridPulse {
+    0% { opacity: 0.8; transform: scale(0.95); }
+    50% { opacity: 1; transform: scale(1.02); }
+    100% { opacity: 0; transform: scale(1); }
+}
+@keyframes pulse {
+    0%, 100% { opacity: 1; }
+    50% { opacity: 0.7; }
+}
+.message.info {
+    background: #d1ecf1;
+    color: #0c5460;
+    border: 2px solid #bee5eb;
+}
+.message.error {
+    background: #f8d7da;
+    color: #721c24;
+    border: 2px solid #f5c6cb;
+}
+.message.success {
+    background: #d4edda;
+    color: #155724;
+    border: 2px solid #c3e6cb;
+}
+
+/* Non-color valid/invalid cues */
+.slot.valid-drop::after {
+    content: '✓';
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    font-weight: bold;
+    color: #28a745;
+}
+.slot.invalid-drop::after {
+    content: '✕';
+    position: absolute;
+    top: 4px;
+    right: 6px;
+    font-weight: bold;
+    color: #dc3545;
+}
+
+/* Timer readability */
+.timer-number {
+    font-variant-numeric: tabular-nums;
+    background: #fffbe0;
+    padding: 2px 10px;
+    border-radius: 10px;
+}
+.timer-number.low-time {
+    color: #c8001e;
+    animation: pulse 1s infinite;
+}
+
+/* Selection, ghost, effects */
+.shape {
+    /* none (not pan-y): a swipe starting on a piece is always a game
+       drag, never a page/tray scroll. Tray still scrolls from gaps,
+       scrollbar, or two-finger swipe; tap-to-place needs no drag at all. */
+    touch-action: none;
+    -webkit-user-select: none;
+    user-select: none;
+    -webkit-touch-callout: none;
+    -webkit-tap-highlight-color: transparent;
+}
+.slot {
+    -webkit-tap-highlight-color: transparent;
+}
+.game-board,
+.shape-tray {
+    overscroll-behavior: contain;
+}
+.shape-tray {
+    -webkit-overflow-scrolling: touch;
+    scroll-padding: 8px;
+}
+.shape.selected {
+    outline: 3px solid #28a745;
+    outline-offset: 2px;
+}
+.shape.img-missing {
+    background: repeating-linear-gradient(45deg, #fffbe0, #fffbe0 8px, #f8d7da 8px, #f8d7da 16px);
+}
+.drag-ghost {
+    position: fixed;
+    width: 78px;
+    height: 78px;
+    opacity: 0.85;
+    pointer-events: none;
+    z-index: 3000;
+}
+.grid-highlight {
+    position: absolute;
+    top: 20px;
+    left: 20px;
+    right: 20px;
+    bottom: 20px;
+    border: 2px solid #28a745;
+    border-radius: 8px;
+    pointer-events: none;
+    z-index: 10;
+    animation: gridPulse 0.6s ease-out forwards;
+}
+.place-pop {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: 2rem;
+    font-weight: bold;
+    color: #28a745;
+    pointer-events: none;
+    z-index: 20;
+    animation: fadeOut 0.8s ease-out forwards;
+}
+
+/* Board flanked by score panels: stacked on small screens,
+   side-by-side on wide screens (container grows to fit). */
+.board-layout {
+    display: grid;
+    gap: 12px;
+    width: 100%;
+    margin-bottom: 18px;
+    grid-template-columns: 1fr;
+}
+.board-layout .game-board {
+    order: -1;
+    width: 100%;
+    max-width: 460px;
+    min-height: 0;
+    margin: 0;
+    justify-self: center;
+}
+.score-panel {
+    background: #003366;
+    border-radius: 12px;
+    padding: 12px 14px;
+    color: #fffbe0;
+    min-width: 0;
+    border: 2px solid #b88b2a;
+}
+.score-panel h2 {
+    font-size: 1.05rem;
+    letter-spacing: 0.5px;
+    margin-bottom: 2px;
+}
+.score-sub {
+    font-size: 0.8rem;
+    opacity: 0.8;
+    margin-bottom: 8px;
+}
+.score-best {
+    font-weight: bold;
+    font-size: 0.95rem;
+    color: #ffe066;
+    margin-bottom: 8px;
+}
+.score-list {
+    list-style: none;
+    margin: 0 0 10px 0;
+    padding: 0;
+    font-size: 0.85rem;
+    display: flex;
+    flex-direction: column;
+    gap: 4px;
+    max-height: 220px;
+    overflow-y: auto;
+}
+.score-list li {
+    background: rgba(255, 255, 255, 0.08);
+    border-radius: 6px;
+    padding: 4px 8px;
+    font-variant-numeric: tabular-nums;
+}
+.score-list li:first-child {
+    border: 1px solid #ffe066;
+}
+.score-clear {
+    width: 100%;
+}
+
+@media (min-width: 560px) {
+    .board-layout {
+        grid-template-columns: 1fr 1fr;
+    }
+    .board-layout .game-board {
+        grid-column: 1 / -1;
+        grid-row: 1;
+    }
+}
+
+@media (min-width: 1020px) {
+    .game-container {
+        max-width: 960px;
+    }
+    .board-layout {
+        grid-template-columns: 180px minmax(0, 1fr) 180px;
+        align-items: start;
+    }
+    .board-layout .game-board {
+        grid-column: auto;
+        grid-row: auto;
+        order: 0;
+    }
+    .score-list {
+        max-height: 320px;
+    }
+}
+.help {
+    width: 100%;
+    background: #fffbe0;
+    border: 2px solid #b88b2a;
+    border-radius: 10px;
+    padding: 8px 14px;
+    margin-bottom: 12px;
+    color: #5a430a;
+}
+.help summary {
+    cursor: pointer;
+    font-weight: bold;
+}
+.controls-row {
+    display: flex;
+    gap: 8px;
+    align-items: center;
+    flex-wrap: wrap;
+}
+.difficulty-label {
+    color: #fffbe0;
+    font-size: 0.9rem;
+    font-weight: bold;
+    display: flex;
+    gap: 8px;
+    align-items: center;
+}
+.difficulty-label select {
+    padding: 4px 8px;
+    border-radius: 8px;
+    border: 2px solid #b88b2a;
+}
+.btn.small {
+    padding: 8px 14px;
+    font-size: 0.9rem;
+    border-radius: 10px;
+}
+.status-row {
+    display: flex;
+    gap: 6px 12px;
+    flex-wrap: wrap;
+    color: #fffbe0;
+    font-size: 0.9rem;
+    font-weight: bold;
+}
+.shape-tray {
+    max-height: 32vh;
+    overflow-y: auto;
+}
+
+/* Keyboard focus */
+.slot:focus-visible,
+.shape:focus-visible,
+.btn:focus-visible,
+select:focus-visible,
+summary:focus-visible {
+    outline: 3px solid #ffe066;
+    outline-offset: 2px;
+}
+
+@media (prefers-reduced-motion: reduce) {
+    *, *::before, *::after {
+        animation: none !important;
+        transition: none !important;
+    }
 } 
